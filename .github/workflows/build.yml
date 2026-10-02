@@ -1,0 +1,59 @@
+name: Build Tiny11 26H2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2025
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Free disk space
+        shell: pwsh
+        run: |
+          Get-PSDrive C
+          Remove-Item "C:\Program Files\Android" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item "C:\Program Files\dotnet" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item "C:\Program Files (x86)\Microsoft\EdgeUpdate" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item "C:\hostedtoolcache" -Recurse -Force -ErrorAction SilentlyContinue
+          Get-PSDrive C
+
+      - name: Download Windows 11 26H2
+        shell: pwsh
+        run: |
+          $url = 'PASTE_YOUR_MICROSOFT_ISO_URL_HERE'
+          Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\Win11.iso"
+
+      - name: Check ISO
+        shell: pwsh
+        run: |
+          Get-Item "$env:RUNNER_TEMP\Win11.iso" |
+            Select-Object Name,Length
+
+      - name: Mount ISO
+        shell: pwsh
+        run: |
+          Mount-DiskImage "$env:RUNNER_TEMP\Win11.iso"
+          $disk = Get-DiskImage "$env:RUNNER_TEMP\Win11.iso" | Get-Volume
+          $drive = $disk.DriveLetter
+          echo "ISO_DRIVE=$drive" >> $env:GITHUB_ENV
+          Write-Host "ISO mounted at $drive`:"
+
+      - name: Run Tiny11
+        shell: powershell
+        run: |
+          powershell.exe -ExecutionPolicy Bypass -File .\tiny11maker.ps1 `
+            -ISO $env:ISO_DRIVE `
+            -SCRATCH C
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v6
+        with:
+          name: tiny11-26h2
+          path: tiny11.iso
+          compression-level: 0
+          retention-days: 1
