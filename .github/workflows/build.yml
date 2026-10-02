@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Free disk space
         shell: pwsh
@@ -29,6 +29,7 @@ jobs:
           curl.exe -L --fail --retry 3 --retry-delay 5 `
             -o "$env:RUNNER_TEMP\Win11.iso" `
             "$url"
+
       - name: Check ISO
         shell: pwsh
         run: |
@@ -47,12 +48,13 @@ jobs:
       - name: Run Tiny11
         shell: powershell
         run: |
-          powershell.exe -ExecutionPolicy Bypass -File .\tiny11maker.ps1 `
+          # Pass 6 (Windows 11 Pro) into the script stdin
+          "6" | powershell.exe -ExecutionPolicy Bypass -File .\tiny11maker.ps1 `
             -ISO $env:ISO_DRIVE `
             -SCRATCH C
 
       - name: Upload ISO
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: tiny11-26h2
           path: tiny11.iso
