@@ -25,7 +25,7 @@ jobs:
       - name: Download Windows 11 26H2
         shell: pwsh
         run: |
-          $url = 'PASTE_YOUR_MICROSOFT_ISO_URL_HERE'
+          $url = 'https://software.download.prss.microsoft.com/dbazure/Windows11_Client_x64_en-us_26300_9457.iso?t=75006e8e-e751-4c1a-a447-87e68c3527b6&P1=1791019858&P2=602&P3=2&P4=j9x9VOZZ0DA9a98Doq%2BguHnzfcqf8k76ola0pVr7Nz7iHYKNxDz2QaqPzwqDpbLa5Bv5r6U5C10%2Ft2OpYNZ3zuW%2FuXN3ZSAbtXLt9%2BRGerhQFl7p6nWeUcLEoQazqkr9OwKU%2FMPK8MvDXXQ9iaN8Qw8KsgxrLra6s8SHWq1JK0CzH%2BrMTYsu0gTJ2ZMYOuWT%2BOu8%2BoQpMTFrodF5Z9%2BdqOSoGi77h5x73aiM6y6rAjRR2lKLDEks4qZmMFi5oX58%2FakXfpHlf4IjIntITVzcNfjHgjlhZv52BF%2F1L1Bh4BqC2hk0uWamd3IrTagNreVeee6LbmW5EzaI3CuvbVaJOQ%3D%3D'
           Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\Win11.iso"
 
       - name: Check ISO
